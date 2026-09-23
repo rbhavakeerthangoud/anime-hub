@@ -7,8 +7,18 @@ export async function GET(
   try {
     const { id } = await params;
 
+    const page =
+      request.nextUrl.searchParams.get("page") || "1";
+
     const response = await fetch(
-      `https://api.tenrai.org/v1/anime/${id}/episodes`
+      `https://api.tenrai.org/v1/anime/${encodeURIComponent(
+        id
+      )}/episodes?page=${encodeURIComponent(page)}`,
+      {
+        next: {
+          revalidate: 3600,
+        },
+      }
     );
 
     if (!response.ok) {

@@ -141,7 +141,48 @@ export default function AnimeDetails() {
 
         const result = await response.json();
 
-        setAnime(result.data);
+setAnime(result.data);
+
+/* =========================
+   SAVE TO VIEWING HISTORY
+   ========================= */
+
+try {
+  const currentAnime = result.data;
+
+  const historyItem = {
+    mal_id: currentAnime.mal_id,
+    title: currentAnime.title,
+    image:
+      currentAnime.images?.jpg?.large_image_url ||
+      currentAnime.images?.jpg?.image_url ||
+      "",
+    rating: currentAnime.score ?? "N/A",
+    viewedAt: Date.now(),
+  };
+
+  const existingHistory = JSON.parse(
+    localStorage.getItem("animehub_history") || "[]"
+  );
+
+  const updatedHistory = [
+    historyItem,
+    ...existingHistory.filter(
+      (item: any) =>
+        String(item.mal_id) !== String(currentAnime.mal_id)
+    ),
+  ].slice(0, 12);
+
+  localStorage.setItem(
+    "animehub_history",
+    JSON.stringify(updatedHistory)
+  );
+} catch (historyError) {
+  console.error(
+    "Failed to save viewing history:",
+    historyError
+  );
+}
       } catch (err) {
         console.error(err);
         setError(true);

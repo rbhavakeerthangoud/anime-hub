@@ -15,7 +15,14 @@ export async function GET(
     const { id, characterId } = await params;
 
     const response = await fetch(
-      `https://api.tenrai.org/v1/anime/${id}/characters/${characterId}`
+      `https://api.tenrai.org/v1/anime/${encodeURIComponent(
+        id
+      )}/characters/${encodeURIComponent(characterId)}`,
+      {
+        next: {
+          revalidate: 3600,
+        },
+      }
     );
 
     if (!response.ok) {
@@ -29,10 +36,7 @@ export async function GET(
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error(
-      "Character details API error:",
-      error
-    );
+    console.error("Character details API error:", error);
 
     return NextResponse.json(
       { error: "Failed to fetch character details" },

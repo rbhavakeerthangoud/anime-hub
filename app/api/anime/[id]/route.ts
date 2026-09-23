@@ -8,7 +8,12 @@ export async function GET(
     const { id } = await params;
 
     const response = await fetch(
-      `https://api.tenrai.org/v1/anime/${id}`
+      `https://api.tenrai.org/v1/anime/${encodeURIComponent(id)}`,
+      {
+        next: {
+          revalidate: 3600,
+        },
+      }
     );
 
     if (!response.ok) {
